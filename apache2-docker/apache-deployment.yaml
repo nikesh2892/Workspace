@@ -1,0 +1,43 @@
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: apache-coedev-app
+  namespace: egov
+spec:
+  selector:
+    matchLabels:
+      app: apache-coedev-app
+  replicas: 1 # tells deployment to run 1 pods matching the template
+  template:
+    metadata:
+      labels:
+        app: apache-coedev-app
+    spec:
+      containers:
+      - name: apache-coedev-app
+        image: nikeshumredkar/repo:coedev-apache
+        resources:
+            limits:
+              memory: "300Mi"
+            requests:
+              memory: "300Mi"  
+        imagePullPolicy: Always        
+---
+#apiVersion: v1
+#kind: Service
+#metadata:
+#  name: apache-coedev-app
+#  namespace: egov
+#  labels:
+#    run: apache-coedev-app
+#spec:
+#  type: LoadBalancer
+#  ports:
+#  - port: 80
+#    protocol: TCP
+#   name: http
+#  - port: 443
+#    protocol: TCP
+#    name: https
+#  selector:
+#    run: apache-coedev-app       
