@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wildfly-pb-fin-app
+  namespace: egov
+  labels:
+    name: wildfly-pb-fin-app
+spec:
+  selector:
+    matchLabels:
+      app: wildfly-pb-fin-app
+  template:
+    metadata:
+      labels:
+        app: wildfly-pb-fin-app
+    spec:
+      containers:
+        - name: wildfly-pb-fin-app
+          image: nikeshumredkar/repo:wildfly-PB-fin-app
+          resources:
+            limits:
+              memory: "3Gi"
+            requests:
+              memory: "3Gi"
+          ports:
+            - name: wildfly-port
+              containerPort: 8080
+              protocol: TCP
+            - name: wildfly-sport
+              containerPort: 8443
+              protocol: TCP  
+            - name: admin-port
+              containerPort: 9990
+              protocol: TCP
+          imagePullPolicy: Always    
+          env:
+            - name: DB_URL
+              value: jdbc:postgresql://ws-rnd-db.postgres.database.azure.com:5432/punjab_coeimpl_app
+            - name: DB_USERNAME
+              value: punjab_coe_user@ws-rnd-db
+            - name: DB_PASSWORD
+              value: Ofoo8aKahw
+            - name: NO_TXN_DB_URL
+              value: jdbc:postgresql://ws-rnd-db.postgres.database.azure.com:5432/punjab_coeimpl_app
+            - name: NO_TXN_DB_USER
+              value: punjab_coe_user@ws-rnd-db
+            - name: NO_TXN_DB_PASSWORD 
+              value: Ofoo8aKahw 
+            - name: REDIS_HOST
+              value: redis.backbone
+            - name: pmidc.ipaddress
+              valueFrom:
+                fieldRef:
+                 fieldPath: status.hostIP        
+          volumeMounts:
+          - mountPath: /opt/jboss/wildfly/modules/system/layers/base/org/egov/settings/main/config/egov-erp-override.properties
+            name: config-volume
+            subPath: egov-erp-override.properties
+      volumes:
+          - name: config-volume
+            configMap:
+              name: egov-erp-coedev-override-config       
+      
+            
+                
